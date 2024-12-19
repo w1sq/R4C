@@ -10,8 +10,11 @@ from robots.models import Robot
 
 
 class ProductionReportTests(TestCase):
+    def setUp(self):
+        self.url = reverse("download_report")
+
     def test_download_report_no_data(self):
-        response = self.client.get(reverse("download_report"))
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, 204)
 
     def test_download_report_outdated_data(self):
@@ -21,7 +24,7 @@ class ProductionReportTests(TestCase):
             created=timezone.now() - timedelta(days=10),
         )
 
-        response = self.client.get(reverse("download_report"))
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, 204)
 
     def test_download_report_with_data(self):
@@ -38,7 +41,7 @@ class ProductionReportTests(TestCase):
                     created=timezone.now() - timedelta(days=1),
                 )
 
-        response = self.client.get(reverse("download_report"))
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response["Content-Type"],
